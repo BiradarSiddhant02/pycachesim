@@ -12,7 +12,7 @@ class Block:
         return self.data[idx]  # Access data using index
 
     def __setitem__(self, idx, value):
-        self.data[idx] = value  # Modify data using index
+        self.data[idx] = int(value) // 0xff  # Modify data using index, only one byte
 
     def __len__(self):
         return self.size  # Overload len() to return the size of the block
@@ -21,20 +21,16 @@ class Block:
         return f"Block(size={self.size}, t={self.t}, v={self.v}, d={self.d}, data={self.data})"
 
     def __str__(self):
-        return f"Tag: {self.t}, Valid: {self.v}, Dirty: {self.d}, Data: {self.data}"
+        return ' '.join(f"{byte:02x}".upper() for byte in self.data)
 
 class Set:
-    def __init__(self, args):
-        # Number of blocks in a set: (s / b) / a, where:
-        # s is the total size of the cache,
-        # b is the block size,
-        # a is the associativity
-        self.blocks = [Block(args.b) for _ in range(args.s // args.b // args.a)]
+    def __init__(self, num_blocks: int, block_size: int):
+        self.blocks = [Block(block_size) for _ in range(num_blocks)]
 
     def __getitem__(self, idx):
         return self.blocks[idx]  # Access blocks using index
 
-    def __setitem__(self, idx, value):
+    def __setitem__(self, value, idx=0):
         self.blocks[idx] = value  # Modify blocks using index
 
     def __len__(self):
@@ -44,15 +40,15 @@ class Set:
         return f"Set(blocks={self.blocks})"
 
     def __str__(self):
-        block_strs = [f"  Block {i}: {block}" for i, block in enumerate(self.blocks)]
-        return "\n".join(block_strs)
+        return '\n'.join(str(block) for block in self.blocks)
 
 class Cache:
     def __init__(self, args):
         self.byte_offset_len = int(log2(args.b))  # Length of the byte offset
         self.index_len = int(log2(args.s // args.b // args.a))  # Length of the index
         self.tag_len = args.w - self.byte_offset_len - self.index_len  # Length of the tag
-        self.sets = [Set(args) for _ in range(args.s // args.b)]  # List of sets in the cache
+        num_sets = args.s // (args.b * args.a)
+        self.sets = [Set(args.a, args.b) for _ in range(num_sets)]  # List of sets in the cache
 
     def __getitem__(self, idx):
         return self.sets[idx]  # Access sets using index
@@ -67,5 +63,4 @@ class Cache:
         return f"Cache(sets={self.sets})"
 
     def __str__(self):
-        set_strs = [f"Set {i}:\n{cache_set}" for i, cache_set in enumerate(self.sets)]
-        return "\n".join(set_strs)
+        return '\n'.join(f"{cache_set}" for cache_set in self.sets)
