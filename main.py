@@ -17,7 +17,7 @@ if __name__ == "__main__":
 
     # cache.print_cache()
     cache[1][0][1] = 10
-    cache[1][0][3] = 256
+    cache[0][0][3] = 255
     print(cache)
 
 

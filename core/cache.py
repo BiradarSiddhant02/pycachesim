@@ -12,7 +12,7 @@ class Block:
         return self.data[idx]  # Access data using index
 
     def __setitem__(self, idx, value):
-        self.data[idx] = int(value) // 0xff  # Modify data using index, only one byte
+        self.data[idx] = int(value) % (256)  # Modify data using index, only one byte
 
     def __len__(self):
         return self.size  # Overload len() to return the size of the block
