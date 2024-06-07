@@ -14,6 +14,14 @@ if __name__ == "__main__":
 
     c_handler = CacheHandler(cache, memory)
 
+
+    # cache.print_cache()
+    print(cache)
+
+
+
+
+
     # tag, ind, byte = c_handler.translate_addr("0x10")
     # print(bin(tag), bin(ind), bin(byte))
     # tag, ind, byte = c_handler.translate_addr("0x30")
