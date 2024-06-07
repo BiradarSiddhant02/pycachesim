@@ -4,9 +4,9 @@ class Memory:
 
     def __init__(self, size: int):
         self.size = size
-        self.len = 32
-        self.data = np.array([["0x"+(hex(np.random.randint(0x00, 0xff)))[2:].zfill(len // 16)\
-                               for i in range(size // len // 4)] for j in range(size // len)])
+        self.block_size = 32
+        self.data = np.array([["0x"+(hex(np.random.randint(0x00, 0xff)))[2:].zfill(self.block_size // 16)\
+                               for i in range(size // self.block_size // 4)] for j in range(size // self.block_size)])
 
 
     def __str__(self):
