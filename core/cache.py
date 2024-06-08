@@ -50,6 +50,14 @@ class Cache:
         num_sets = args.s // (args.b * args.a)
         self.sets = [Set(args.a, args.b) for _ in range(num_sets)]  # List of sets in the cache
 
+    def clear(self):
+        for cache_set in self.sets:
+            for block in cache_set.blocks:
+                block.t = 0
+                block.v = 0
+                block.d = 0
+                block.data = [0 for _ in range(block.size)]
+
     def __getitem__(self, idx):
         return self.sets[idx]  # Access sets using index
 
@@ -63,4 +71,19 @@ class Cache:
         return f"Cache(sets={self.sets})"
 
     def __str__(self):
-        return '\n'.join(f"{cache_set}" for cache_set in self.sets)
+        return '\n'.join(f"{cache_set}\n{'-' * 20}" for cache_set in self.sets)
+
+# Example usage
+class Args:
+    def __init__(self):
+        self.w = 8  # address width
+        self.s = 64  # cache size
+        self.b = 8  # block size
+        self.a = 2  # associativity
+        self.wh = "wb"  # write hit protocol
+        self.wm = "wa"  # write miss protocol
+        self.r = "lru"  # replacement protocol
+
+args = Args()
+cache = Cache(args)
+print(cache)
