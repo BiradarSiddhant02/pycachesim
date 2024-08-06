@@ -1,19 +1,30 @@
 import numpy as np
 
 class Memory:
-
     def __init__(self, size: int):
-        self.size = size
-        self.block_size = 32
-        self.data = np.array([["0x"+(hex(np.random.randint(0x00, 0xff)))[2:].zfill(self.block_size // 16)\
-                               for i in range(size // self.block_size // 4)] for j in range(size // self.block_size)])
-
+        self.size = size    # in bytes
+        self.block_size = 4 # in bytes
+        self.num_blocks = self.size // self.block_size
+        self.data = np.array(np.random.randint(0, 0xff, (self.num_blocks, self.block_size), np.uint8))
 
     def __str__(self):
-        repr = str()
-        for block in self.data:
-            for byte in block:
-                repr = repr + byte + " "
-            repr = repr + "\n"
+        result = []
+        for i, block in enumerate(self.data):
+            block_address = self._get_addr(i * 8) # to print the address of the line in memory
+            result.append(f'{block_address}: ' + ' '.join(f'{byte:02x}' for byte in block))
+        return '\n'.join(result)
+    
+    def __getitem__(self, addr):
+        # Convert the address to an integer
+        addr = int(addr, 16)
+        # Calculate block number and offset within the block
+        block_num = addr // self.block_size
+        offset = addr % self.block_size
+        # Retrieve the byte from the block
+        return self.data[block_num][offset]
 
-        return repr
+    @staticmethod
+    def _get_addr(number: int) -> str:
+        return f'{number:04x}'
+
+
